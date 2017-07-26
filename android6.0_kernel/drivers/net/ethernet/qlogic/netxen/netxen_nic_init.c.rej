@@ -1,0 +1,19 @@
+*** ./drivers/net/ethernet/qlogic/netxen/netxen_nic_init.c	2016-10-24 23:06:45.799265611 +0200
+--- ../mptcp_nexus5/drivers/net/ethernet/qlogic/netxen/netxen_nic_init.c	2016-10-24 22:38:05.420951859 +0200
+***************
+*** 144,150 ****
+  					 buffrag->length, PCI_DMA_TODEVICE);
+  			buffrag->dma = 0ULL;
+  		}
+! 		for (j = 0; j < cmd_buf->frag_count; j++) {
+  			buffrag++;
+  			if (buffrag->dma) {
+  				pci_unmap_page(adapter->pdev, buffrag->dma,
+--- 144,150 ----
+  					 buffrag->length, PCI_DMA_TODEVICE);
+  			buffrag->dma = 0ULL;
+  		}
+! 		for (j = 1; j < cmd_buf->frag_count; j++) {
+  			buffrag++;
+  			if (buffrag->dma) {
+  				pci_unmap_page(adapter->pdev, buffrag->dma,

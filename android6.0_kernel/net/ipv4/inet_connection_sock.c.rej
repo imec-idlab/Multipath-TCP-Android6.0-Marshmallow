@@ -1,0 +1,32 @@
+*** ./net/ipv4/inet_connection_sock.c	2016-10-24 23:06:47.111285887 +0200
+--- ../mptcp_nexus5/net/ipv4/inet_connection_sock.c	2016-10-24 22:38:06.684971134 +0200
+***************
+*** 389,400 ****
+  {
+  	const struct inet_request_sock *ireq = inet_rsk(req);
+  	struct inet_sock *newinet = inet_sk(newsk);
+! 	struct ip_options_rcu *opt = ireq->opt;
+  	struct net *net = sock_net(sk);
+  	struct flowi4 *fl4;
+  	struct rtable *rt;
+  
+  	fl4 = &newinet->cork.fl.u.ip4;
+  	flowi4_init_output(fl4, sk->sk_bound_dev_if, sk->sk_mark,
+  			   RT_CONN_FLAGS(sk), RT_SCOPE_UNIVERSE,
+  			   sk->sk_protocol, inet_sk_flowi_flags(sk),
+--- 390,404 ----
+  {
+  	const struct inet_request_sock *ireq = inet_rsk(req);
+  	struct inet_sock *newinet = inet_sk(newsk);
+! 	struct ip_options_rcu *opt;
+  	struct net *net = sock_net(sk);
+  	struct flowi4 *fl4;
+  	struct rtable *rt;
+  
+  	fl4 = &newinet->cork.fl.u.ip4;
++ 
++ 	rcu_read_lock();
++ 	opt = rcu_dereference(newinet->inet_opt);
+  	flowi4_init_output(fl4, sk->sk_bound_dev_if, sk->sk_mark,
+  			   RT_CONN_FLAGS(sk), RT_SCOPE_UNIVERSE,
+  			   sk->sk_protocol, inet_sk_flowi_flags(sk),

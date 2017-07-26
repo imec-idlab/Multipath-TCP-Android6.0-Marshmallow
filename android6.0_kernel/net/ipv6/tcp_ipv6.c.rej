@@ -1,0 +1,20 @@
+*** ./net/ipv6/tcp_ipv6.c	2016-10-24 23:06:47.131286196 +0200
+--- ../mptcp_nexus5/net/ipv6/tcp_ipv6.c	2016-10-24 22:38:06.704971439 +0200
+***************
+*** 1461,1467 ****
+  #endif
+  
+  	if (__inet_inherit_port(sk, newsk) < 0) {
+! 		sock_put(newsk);
+  		goto out;
+  	}
+  	__inet6_hash(newsk, NULL);
+--- 1512,1519 ----
+  #endif
+  
+  	if (__inet_inherit_port(sk, newsk) < 0) {
+! 		inet_csk_prepare_forced_close(newsk);
+! 		tcp_done(newsk);
+  		goto out;
+  	}
+  	__inet6_hash(newsk, NULL);

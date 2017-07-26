@@ -1,0 +1,65 @@
+*** ./net/ipv4/tcp_input.c	2016-10-24 23:06:47.119286010 +0200
+--- ../mptcp_nexus5/net/ipv4/tcp_input.c	2016-10-24 22:38:06.692971256 +0200
+***************
+*** 102,127 ****
+  
+  int sysctl_tcp_moderate_rcvbuf __read_mostly = 1;
+  int sysctl_tcp_abc __read_mostly;
+! 
+! #define FLAG_DATA		0x01 /* Incoming frame contained data.		*/
+! #define FLAG_WIN_UPDATE		0x02 /* Incoming ACK was a window update.	*/
+! #define FLAG_DATA_ACKED		0x04 /* This ACK acknowledged new data.		*/
+! #define FLAG_RETRANS_DATA_ACKED	0x08 /* "" "" some of which was retransmitted.	*/
+! #define FLAG_SYN_ACKED		0x10 /* This ACK acknowledged SYN.		*/
+! #define FLAG_DATA_SACKED	0x20 /* New SACK.				*/
+! #define FLAG_ECE		0x40 /* ECE in this ACK				*/
+! #define FLAG_SLOWPATH		0x100 /* Do not skip RFC checks for window update.*/
+! #define FLAG_ONLY_ORIG_SACKED	0x200 /* SACKs only non-rexmit sent before RTO */
+! #define FLAG_SND_UNA_ADVANCED	0x400 /* Snd_una was changed (!= FLAG_DATA_ACKED) */
+! #define FLAG_DSACKING_ACK	0x800 /* SACK blocks contained D-SACK info */
+! #define FLAG_NONHEAD_RETRANS_ACKED	0x1000 /* Non-head rexmitted data was ACKed */
+! #define FLAG_SACK_RENEGING	0x2000 /* snd_una advanced to a sacked seq */
+! 
+! #define FLAG_ACKED		(FLAG_DATA_ACKED|FLAG_SYN_ACKED)
+! #define FLAG_NOT_DUP		(FLAG_DATA|FLAG_WIN_UPDATE|FLAG_ACKED)
+! #define FLAG_CA_ALERT		(FLAG_DATA_SACKED|FLAG_ECE)
+! #define FLAG_FORWARD_PROGRESS	(FLAG_ACKED|FLAG_DATA_SACKED)
+! #define FLAG_ANY_PROGRESS	(FLAG_FORWARD_PROGRESS|FLAG_SND_UNA_ADVANCED)
+  
+  #define TCP_REMNANT (TCP_FLAG_FIN|TCP_FLAG_URG|TCP_FLAG_SYN|TCP_FLAG_PSH)
+  #define TCP_HP_BITS (~(TCP_RESERVED_BITS|TCP_FLAG_PSH))
+--- 105,111 ----
+  
+  int sysctl_tcp_moderate_rcvbuf __read_mostly = 1;
+  int sysctl_tcp_abc __read_mostly;
+! EXPORT_SYMBOL(sysctl_tcp_abc);
+  
+  #define TCP_REMNANT (TCP_FLAG_FIN|TCP_FLAG_URG|TCP_FLAG_SYN|TCP_FLAG_PSH)
+  #define TCP_HP_BITS (~(TCP_RESERVED_BITS|TCP_FLAG_PSH))
+***************
+*** 5464,5472 ****
+  		return -1;
+  	}
+  
+  	return 1;
+  
+  discard:
+  	__kfree_skb(skb);
+  	return 0;
+  }
+--- 5587,5601 ----
+  		return -1;
+  	}
+  
++ 	/* If valid: post process the received MPTCP options. */
++ 	if (tp->mpc && mptcp_handle_options(sk, th, skb))
++ 		goto discard;
++ 
+  	return 1;
+  
+  discard:
++ 	if (tp->mpc)
++ 		mptcp_reset_mopt(tp);
+  	__kfree_skb(skb);
+  	return 0;
+  }

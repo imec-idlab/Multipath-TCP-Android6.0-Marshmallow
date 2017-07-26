@@ -1,0 +1,27 @@
+*** ./drivers/net/ethernet/qlogic/netxen/netxen_nic_main.c	2016-10-24 23:06:45.799265611 +0200
+--- ../mptcp_nexus5/drivers/net/ethernet/qlogic/netxen/netxen_nic_main.c	2016-10-24 22:38:05.420951859 +0200
+***************
+*** 1952,1961 ****
+  	while (--i >= 0) {
+  		nf = &pbuf->frag_array[i+1];
+  		pci_unmap_page(pdev, nf->dma, nf->length, PCI_DMA_TODEVICE);
+  	}
+  
+  	nf = &pbuf->frag_array[0];
+  	pci_unmap_single(pdev, nf->dma, skb_headlen(skb), PCI_DMA_TODEVICE);
+  
+  out_err:
+  	return -ENOMEM;
+--- 1952,1963 ----
+  	while (--i >= 0) {
+  		nf = &pbuf->frag_array[i+1];
+  		pci_unmap_page(pdev, nf->dma, nf->length, PCI_DMA_TODEVICE);
++ 		nf->dma = 0ULL;
+  	}
+  
+  	nf = &pbuf->frag_array[0];
+  	pci_unmap_single(pdev, nf->dma, skb_headlen(skb), PCI_DMA_TODEVICE);
++ 	nf->dma = 0ULL;
+  
+  out_err:
+  	return -ENOMEM;

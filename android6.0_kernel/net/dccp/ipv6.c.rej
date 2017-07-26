@@ -1,0 +1,20 @@
+*** ./net/dccp/ipv6.c	2016-10-24 23:06:47.103285763 +0200
+--- ../mptcp_nexus5/net/dccp/ipv6.c	2016-10-24 22:38:06.676971012 +0200
+***************
+*** 611,617 ****
+  	newinet->inet_rcv_saddr = LOOPBACK4_IPV6;
+  
+  	if (__inet_inherit_port(sk, newsk) < 0) {
+! 		sock_put(newsk);
+  		goto out;
+  	}
+  	__inet6_hash(newsk, NULL);
+--- 611,618 ----
+  	newinet->inet_rcv_saddr = LOOPBACK4_IPV6;
+  
+  	if (__inet_inherit_port(sk, newsk) < 0) {
+! 		inet_csk_prepare_forced_close(newsk);
+! 		dccp_done(newsk);
+  		goto out;
+  	}
+  	__inet6_hash(newsk, NULL);

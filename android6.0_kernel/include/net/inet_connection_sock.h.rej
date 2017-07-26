@@ -1,0 +1,18 @@
+*** ./include/net/inet_connection_sock.h	2016-10-24 23:06:46.979283847 +0200
+--- ../mptcp_nexus5/include/net/inet_connection_sock.h	2016-10-24 22:38:06.560969243 +0200
+***************
+*** 319,324 ****
+  				       const unsigned long max_rto);
+  
+  extern void inet_csk_destroy_sock(struct sock *sk);
+  
+  /*
+   * LISTEN is a special case for poll..
+--- 321,327 ----
+  				       const unsigned long max_rto);
+  
+  extern void inet_csk_destroy_sock(struct sock *sk);
++ extern void inet_csk_prepare_forced_close(struct sock *sk);
+  
+  /*
+   * LISTEN is a special case for poll..

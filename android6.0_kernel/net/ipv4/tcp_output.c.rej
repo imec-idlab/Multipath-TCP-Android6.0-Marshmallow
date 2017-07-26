@@ -1,0 +1,21 @@
+*** ./net/ipv4/tcp_output.c	2016-10-24 23:06:47.123286072 +0200
+--- ../mptcp_nexus5/net/ipv4/tcp_output.c	2016-10-24 22:38:06.696971317 +0200
+***************
+*** 1371,1378 ****
+   * modulo only when the receiver window alone is the limiting factor or
+   * when we would be allowed to send the split-due-to-Nagle skb fully.
+   */
+! static unsigned int tcp_mss_split_point(const struct sock *sk, const struct sk_buff *skb,
+! 					unsigned int mss_now, unsigned int cwnd)
+  {
+  	const struct tcp_sock *tp = tcp_sk(sk);
+  	u32 needed, window, cwnd_len;
+--- 1425,1432 ----
+   * modulo only when the receiver window alone is the limiting factor or
+   * when we would be allowed to send the split-due-to-Nagle skb fully.
+   */
+! unsigned int tcp_mss_split_point(const struct sock *sk, const struct sk_buff *skb,
+! 				 unsigned int mss_now, unsigned int cwnd)
+  {
+  	const struct tcp_sock *tp = tcp_sk(sk);
+  	u32 needed, window, cwnd_len;
